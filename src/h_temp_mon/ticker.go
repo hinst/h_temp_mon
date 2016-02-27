@@ -1,6 +1,10 @@
 package h_temp_mon
 
-import "time"
+import (
+	"fmt"
+	"sync"
+	"time"
+)
 
 type TTicker struct {
 	Interval   time.Duration
@@ -8,6 +12,7 @@ type TTicker struct {
 	Counter    uint64
 	ShouldStop bool
 	Output     chan uint64
+	Waiter     sync.WaitGroup
 }
 
 func NewTicker() *TTicker {
@@ -19,7 +24,9 @@ func NewTicker() *TTicker {
 }
 
 func (this *TTicker) Start() {
+	this.Waiter.Add(1)
 	this.Output = make(chan uint64, this.BufferSize)
+	go this.Run()
 }
 
 func (this *TTicker) Run() {
@@ -32,8 +39,14 @@ func (this *TTicker) Run() {
 		}
 	}
 	close(this.Output)
+	fmt.Println("ticker exited")
+	this.Waiter.Done()
 }
 
 func (this *TTicker) Stop() {
 	this.ShouldStop = true
+}
+
+func (this *TTicker) WaitFor() {
+	this.Waiter.Wait()
 }
