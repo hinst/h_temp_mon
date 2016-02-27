@@ -14,7 +14,7 @@ func NewApp() *TApp {
 func (this *TApp) Run() {
 	this.Ticker.Start()
 	InstallShutdownReceiver(this.Stop)
-	this.Ticker.Waiter.Wait()
+	this.Ticker.WaitFor()
 }
 
 func (this *TApp) Stop() {
