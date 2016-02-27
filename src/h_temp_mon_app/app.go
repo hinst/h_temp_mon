@@ -9,4 +9,5 @@ func main() {
 	fmt.Println("[GLOBAL START]")
 	var app = &h_temp_mon.TApp{}
 	app.Run()
+	fmt.Println("[GLOBAL EXIT]")
 }
