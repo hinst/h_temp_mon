@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"h_temp_mon"
+)
 
 func main() {
-    fmt.Println("[GLOBAL START]")
+	fmt.Println("[GLOBAL START]")
+	var app = &h_temp_mon.TApp{}
+	app.Run()
 }

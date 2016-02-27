@@ -1,0 +1,10 @@
+{
+    "go.buildOnSave": true,
+    "go.lintOnSave": false,
+    "go.vetOnSave": true,
+    "go.buildFlags": [],
+    "go.lintFlags": [],
+    "go.vetFlags": [],
+    "go.useCodeSnippetsOnFunctionSuggest": false,
+    "go.formatOnSave": true,
+}
