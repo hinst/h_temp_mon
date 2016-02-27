@@ -1,7 +1,9 @@
 package h_temp_mon
 
+import "time"
+
 type TTicker struct {
-	Interval   float32
+	Interval   time.Duration
 	BufferSize int
 	Counter    uint64
 	ShouldStop bool
@@ -11,7 +13,7 @@ type TTicker struct {
 func NewTicker() *TTicker {
 	var result = &TTicker{}
 	result.BufferSize = 1
-	result.Interval = 1
+	result.Interval = time.Second
 	result.Counter = 0
 	return result
 }
@@ -24,6 +26,7 @@ func (this *TTicker) Run() {
 	for {
 		this.Counter++
 		this.Output <- this.Counter
+		time.Sleep(this.Interval)
 		if this.ShouldStop {
 			break
 		}
