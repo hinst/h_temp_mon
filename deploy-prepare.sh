@@ -1,0 +1,1 @@
+tar cf content.tar *
