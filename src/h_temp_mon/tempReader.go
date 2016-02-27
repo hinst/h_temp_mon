@@ -18,11 +18,13 @@ func NewTempReader() *TTempReader {
 }
 
 func (this *TTempReader) Read() float32 {
-	var data, result = exec.Command("/opt/vc/bin/vcgencmd measure_temp").Output()
+	var data, result = exec.Command("/opt/vc/bin/vcgencmd", "measure_temp").Output()
 	var temperature float32 = 0
 	if result == nil {
 		var text = string(data)
 		temperature = ExtractTemperatureFromText(text)
+	} else {
+		panic(result)
 	}
 	return temperature
 }
