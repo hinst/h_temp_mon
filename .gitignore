@@ -1,6 +1,5 @@
 pkg/
 bin/
-src/
+src/*
 !src/h_temp_mon/
 !src/h_temp_mon_app/
-
