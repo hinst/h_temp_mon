@@ -2,6 +2,7 @@ package h_temp_mon
 
 import (
 	"database/sql"
+	"io/ioutil"
 
 	_ "github.com/nakagami/firebirdsql"
 )
@@ -19,6 +20,13 @@ func CreateTempWriter() *TTempWriter {
 	this.DBPassword = "password"
 	this.DBName = "h_temp_mon"
 	return this
+}
+
+func (this *TTempWriter) Prepare() {
+	var data, readResult = ioutil.ReadFile("dbpassword.txt")
+	if readResult == nil {
+		this.DBPassword = string(data)
+	}
 }
 
 func (this *TTempWriter) Run() {
