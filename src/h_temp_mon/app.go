@@ -17,12 +17,15 @@ func (this *TApp) Run() {
 	this.TempReader.Input = this.Ticker.Output
 	this.TempReader.Start()
 	this.TempWriter = CreateTempWriter()
+	this.TempWriter.Input = this.TempReader.Output
 	this.TempWriter.Prepare()
+	this.TempWriter.Start()
 
 	InstallShutdownReceiver(this.Stop)
 
 	this.Ticker.WaitFor()
 	this.TempReader.WaitFor()
+	this.TempWriter.WaitFor()
 }
 
 func (this *TApp) Stop() {
