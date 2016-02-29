@@ -7,9 +7,29 @@ import (
 )
 
 type TTempWriter struct {
-	DB *sql.DB
+	DBUserName string
+	DBPassword string
+	DBName     string
+	DB         *sql.DB
+}
+
+func CreateTempWriter() *TTempWriter {
+	var this = &TTempWriter{}
+	this.DBUserName = "h_temp_mon"
+	this.DBPassword = "password"
+	this.DBName = "h_temp_mon"
+	return this
 }
 
 func (this *TTempWriter) Run() {
-	this.DB = sql.Open("firebirdsql")
+	var connectionString = this.GetConnectionString()
+	var dbOpenResult error
+	this.DB, dbOpenResult = sql.Open("firebirdsql", connectionString)
+	if dbOpenResult == nil {
+
+	}
+}
+
+func (this *TTempWriter) GetConnectionString() string {
+	return this.DBUserName + ":" + this.DBPassword + "@localhost/" + this.DBName
 }
