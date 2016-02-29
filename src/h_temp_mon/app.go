@@ -1,10 +1,9 @@
 package h_temp_mon
 
-import "fmt"
-
 type TApp struct {
 	Ticker     *TTicker
 	TempReader *TTempReader
+	TempWriter *TTempWriter
 }
 
 func NewApp() *TApp {
@@ -12,15 +11,16 @@ func NewApp() *TApp {
 }
 
 func (this *TApp) Run() {
-	this.Ticker = NewTicker()
+	this.Ticker = CreateTicker()
 	this.Ticker.Start()
-	this.TempReader = NewTempReader()
+	this.TempReader = CreateTempReader()
 	this.TempReader.Input = this.Ticker.Output
 	this.TempReader.Start()
+	this.TempWriter = CreateTempWriter()
+	this.TempWriter.Prepare()
+
 	InstallShutdownReceiver(this.Stop)
-	for value := range this.TempReader.Output {
-		fmt.Println(value)
-	}
+
 	this.Ticker.WaitFor()
 	this.TempReader.WaitFor()
 }

@@ -36,7 +36,7 @@ func (this *TTempWriter) Run() {
 	if dbOpenResult == nil {
 		Log.Print("DB open: success")
 	} else {
-		Log.Print("DB open: fail")
+		Log.Print("DB open: fail: ", dbOpenResult)
 	}
 }
 

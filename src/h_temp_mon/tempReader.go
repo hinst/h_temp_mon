@@ -13,7 +13,7 @@ type TTempReader struct {
 	Waiter sync.WaitGroup
 }
 
-func NewTempReader() *TTempReader {
+func CreateTempReader() *TTempReader {
 	return &TTempReader{}
 }
 
@@ -32,7 +32,11 @@ func (this *TTempReader) Read() float32 {
 func (this *TTempReader) Start() {
 	this.Waiter.Add(1)
 	this.Output = make(chan float32, 1)
-	go this.Run()
+	go func() {
+		defer this.Waiter.Done()
+		defer close(this.Output)
+		this.Run()
+	}()
 }
 
 func (this *TTempReader) Run() {
@@ -40,8 +44,6 @@ func (this *TTempReader) Run() {
 		var temperature = this.Read()
 		this.Output <- temperature
 	}
-	close(this.Output)
-	this.Waiter.Done()
 }
 
 func (this *TTempReader) WaitFor() {
