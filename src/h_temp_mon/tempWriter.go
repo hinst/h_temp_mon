@@ -9,19 +9,12 @@ import (
 )
 
 type TTempWriter struct {
-	DBUserName string
-	DBPassword string
-	DBName     string
-	DB         *sql.DB
-	Input      chan float32
-	Waiter     sync.WaitGroup
+	Input  chan float32
+	Waiter sync.WaitGroup
 }
 
 func CreateTempWriter() *TTempWriter {
 	var this = &TTempWriter{}
-	this.DBUserName = "h_temp_mon"
-	this.DBPassword = "password"
-	this.DBName = "h_temp_mon"
 	return this
 }
 
@@ -61,10 +54,22 @@ func (this *TTempWriter) Start() {
 
 func (this *TTempWriter) Run() {
 	this.OpenDB()
-	for temperature := range this.Input {
-		unused(temperature)
+	if this.DB != nil {
+		this.PrepareTables()
+		for temperature := range this.Input {
+			unused(temperature)
+		}
 	}
 	defer this.CloseDB()
+}
+
+func (this *TTempWriter) PrepareTables() {
+	var transaction, _ = this.DB.Begin()
+	if CheckTableExists(transaction, "Temperatures") {
+	} else {
+		transaction.Exec("create table Temperatures (Moment timestamp, temperature float)")
+	}
+	transaction.Commit()
 }
 
 func (this *TTempWriter) GetConnectionString() string {

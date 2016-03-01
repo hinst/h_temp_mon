@@ -11,6 +11,8 @@ func NewApp() *TApp {
 }
 
 func (this *TApp) Run() {
+	InitializeLog()
+
 	this.Ticker = CreateTicker()
 	this.Ticker.Start()
 	this.TempReader = CreateTempReader()
