@@ -3,13 +3,16 @@ package h_temp_mon
 import (
 	"database/sql"
 	"io/ioutil"
+	"strconv"
 )
 
 type TTempDB struct {
-	DBUserName string
-	DBPassword string
-	DBName     string
-	DB         *sql.DB
+	DBUserName   string
+	DBPassword   string
+	DBName       string
+	DB           *sql.DB
+	DBErrorCount int
+	DBErrorLimit int
 }
 
 func CreateTempDB() *TTempDB {
@@ -17,6 +20,9 @@ func CreateTempDB() *TTempDB {
 	this.DBUserName = "h_temp_mon"
 	this.DBPassword = "password"
 	this.DBName = "h_temp_mon"
+	this.DB = nil
+	this.DBErrorCount = 0
+	this.DBErrorLimit = 100
 	return this
 }
 
@@ -77,4 +83,24 @@ func (this *TTempDB) PrepareTable(transaction *sql.Tx, tableName, tableFields st
 			Log.Println("Could not create table: " + tableName + " error='" + err.Error() + "'")
 		}
 	}
+}
+
+func (this *TTempDB) WriteTemperature(temperature float32) {
+	statement, err := this.DB.Prepare("insert into Temperatures(Moment, temperature) values(?, ?)")
+	if err == nil {
+		var _, statementError = statement.Exec()
+		if statementError == nil {
+		} else {
+			this.ReportError("WriteTemperature: " + statementError.Error())
+		}
+	}
+}
+
+func (this *TTempDB) ReportError(text string) {
+	if this.DBErrorCount < this.DBErrorLimit {
+		Log.Println("DB Error #" + strconv.Itoa(this.DBErrorCount) + ": " + text)
+	} else {
+		Log.Panicln("DB Error #" + strconv.Itoa(this.DBErrorCount) + " limit reached: " + text)
+	}
+	this.DBErrorCount++
 }

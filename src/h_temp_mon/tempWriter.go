@@ -2,6 +2,7 @@ package h_temp_mon
 
 import (
 	"sync"
+	"time"
 
 	_ "github.com/nakagami/firebirdsql"
 )
@@ -27,10 +28,14 @@ func (this *TTempWriter) Start() {
 
 func (this *TTempWriter) Run() {
 	for temperature := range this.Input {
-		unused(temperature)
+		Log.Println(TimeToFirebirdString(time.Now()))
+		this.Write(temperature)
 	}
 }
 
 func (this *TTempWriter) WaitFor() {
 	this.Waiter.Wait()
+}
+
+func (this *TTempWriter) Write(temperature float32) {
 }

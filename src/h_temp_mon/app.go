@@ -1,5 +1,7 @@
 package h_temp_mon
 
+import "time"
+
 type TApp struct {
 	Ticker     *TTicker
 	TempReader *TTempReader
@@ -21,12 +23,14 @@ func (this *TApp) Run() {
 	}
 	this.TempDB.PrepareTables()
 	this.Ticker = CreateTicker()
+	this.Ticker.Interval = time.Second / 2
 	this.Ticker.Start()
 	this.TempReader = CreateTempReader()
 	this.TempReader.Input = this.Ticker.Output
 	this.TempReader.Start()
 	this.TempWriter = CreateTempWriter()
 	this.TempWriter.Input = this.TempReader.Output
+	this.TempWriter.DB = this.TempDB
 	this.TempWriter.Start()
 
 	InstallShutdownReceiver(this.Stop)
