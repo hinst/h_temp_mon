@@ -52,9 +52,18 @@ func (this *TTempDB) CloseDB() {
 
 func (this *TTempDB) PrepareTables() {
 	var transaction, _ = this.DB.Begin()
-	if CheckTableExists(transaction, "Temperatures") {
-	} else {
-		transaction.Exec("create table Temperatures (Moment timestamp, temperature float)")
-	}
+	this.PrepareTable(transaction, "Temperatures", "Moment timestamp, temperature float")
 	transaction.Commit()
+}
+
+func (this *TTempDB) PrepareTable(transaction *sql.Tx, tableName, tableFields string) {
+	if CheckTableExists(transaction, tableName) {
+	} else {
+		var _, err = transaction.Exec("create table " + tableName + " (" + tableFields + ")")
+		if err == nil {
+			Log.Println("Table created: " + tableName)
+		} else {
+			Log.Println("Could not create table: " + tableName + " error='" + err.Error() + "'")
+		}
+	}
 }
