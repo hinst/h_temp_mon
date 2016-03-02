@@ -31,7 +31,7 @@ func (this *TTempDB) GetConnectionString() string {
 	return this.DBUserName + ":" + this.DBPassword + "@localhost/" + this.DBName
 }
 
-func (this *TTempDB) OpenDB() {
+func (this *TTempDB) Open() {
 	var connectionString = this.GetConnectionString()
 	var dbOpenResult error
 	Log.Println("OpenDB: DBName=" + this.DBName)
@@ -44,9 +44,14 @@ func (this *TTempDB) OpenDB() {
 	}
 }
 
-func (this *TTempDB) CloseDB() {
+func (this *TTempDB) Close() {
 	if this.DB != nil {
-		this.DB.Close()
+		var closeResult = this.DB.Close()
+		if closeResult == nil {
+			Log.Println("DB closed successfully")
+		} else {
+			Log.Println("Could not close DB; error='" + closeResult.Error() + "'")
+		}
 	}
 }
 

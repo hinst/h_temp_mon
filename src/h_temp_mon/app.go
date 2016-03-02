@@ -15,7 +15,7 @@ func (this *TApp) Run() {
 	InitializeLog()
 	this.TempDB = CreateTempDB()
 	this.TempDB.Prepare()
-	this.TempDB.OpenDB()
+	this.TempDB.Open()
 	if this.TempDB.DB == nil {
 		return
 	}
@@ -34,7 +34,7 @@ func (this *TApp) Run() {
 	this.Ticker.WaitFor()
 	this.TempReader.WaitFor()
 	this.TempWriter.WaitFor()
-	this.TempDB.CloseDB()
+	this.TempDB.Close()
 }
 
 func (this *TApp) Stop() {

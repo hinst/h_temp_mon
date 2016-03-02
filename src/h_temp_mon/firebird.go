@@ -11,7 +11,6 @@ func CheckTableExists(transaction *sql.Tx, tableName string) bool {
 	var result = false
 	tableName = escapeFDBString(tableName)
 	var queryText = "select 1 from rdb$relations where rdb$relation_name = '" + strings.ToUpper(tableName) + "'"
-	Log.Println(queryText)
 	var rows, queryError = transaction.Query(queryText)
 	if queryError == nil {
 		defer rows.Close()
