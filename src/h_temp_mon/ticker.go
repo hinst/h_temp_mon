@@ -6,17 +6,19 @@ import (
 )
 
 type TTicker struct {
-	Interval   time.Duration
-	BufferSize int
-	Counter    uint64
-	ShouldStop bool
-	Output     chan uint64
-	Waiter     sync.WaitGroup
+	AtomicInterval time.Duration
+	Interval       time.Duration
+	BufferSize     int
+	Counter        uint64
+	ShouldStop     bool
+	Output         chan uint64
+	Waiter         sync.WaitGroup
 }
 
 func CreateTicker() *TTicker {
 	var result = &TTicker{}
 	result.BufferSize = 0
+	result.AtomicInterval = time.Second / 2
 	result.Interval = time.Second
 	result.Counter = 0
 	return result
@@ -33,10 +35,15 @@ func (this *TTicker) Start() {
 }
 
 func (this *TTicker) Run() {
+	var currentInterval time.Duration = 0
 	for {
 		this.Counter++
-		this.Output <- this.Counter
-		time.Sleep(this.Interval)
+		if this.Interval < currentInterval {
+			this.Output <- this.Counter
+			currentInterval -= this.Interval
+		}
+		time.Sleep(this.AtomicInterval)
+		currentInterval += this.AtomicInterval
 		if this.ShouldStop {
 			break
 		}

@@ -38,4 +38,5 @@ func (this *TTempWriter) WaitFor() {
 }
 
 func (this *TTempWriter) Write(temperature float32) {
+	this.DB.WriteTemperature(temperature)
 }

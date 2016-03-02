@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"io/ioutil"
 	"strconv"
+	"time"
 )
 
 type TTempDB struct {
@@ -86,13 +87,13 @@ func (this *TTempDB) PrepareTable(transaction *sql.Tx, tableName, tableFields st
 }
 
 func (this *TTempDB) WriteTemperature(temperature float32) {
-	statement, err := this.DB.Prepare("insert into Temperatures(Moment, temperature) values(?, ?)")
+	var momentString = "'" + TimeToFirebirdString(time.Now()) + "'"
+	var temperatureString = strconv.FormatFloat(float64(temperature), 'f', 1, 32)
+	var statementString = "insert into Temperatures values(" + momentString + ", " + temperatureString + ")"
+	var _, err = this.DB.Exec(statementString)
 	if err == nil {
-		var _, statementError = statement.Exec()
-		if statementError == nil {
-		} else {
-			this.ReportError("WriteTemperature: " + statementError.Error())
-		}
+	} else {
+		this.ReportError("WriteTemperature: error='" + err.Error() + "' statement='" + statementString + "'")
 	}
 }
 

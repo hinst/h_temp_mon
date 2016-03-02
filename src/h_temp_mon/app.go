@@ -23,7 +23,7 @@ func (this *TApp) Run() {
 	}
 	this.TempDB.PrepareTables()
 	this.Ticker = CreateTicker()
-	this.Ticker.Interval = time.Second / 2
+	this.Ticker.Interval = time.Second * 3
 	this.Ticker.Start()
 	this.TempReader = CreateTempReader()
 	this.TempReader.Input = this.Ticker.Output
