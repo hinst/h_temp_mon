@@ -9,6 +9,7 @@ import (
 type TTempWriter struct {
 	Input  chan float32
 	Waiter sync.WaitGroup
+	DB     *TTempDB
 }
 
 func CreateTempWriter() *TTempWriter {

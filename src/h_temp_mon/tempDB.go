@@ -37,7 +37,13 @@ func (this *TTempDB) Open() {
 	Log.Println("OpenDB: DBName=" + this.DBName)
 	this.DB, dbOpenResult = sql.Open("firebirdsql", connectionString)
 	if dbOpenResult == nil {
-		Log.Println("OpenDB: success")
+		var pingResult = this.DB.Ping()
+		if pingResult == nil {
+			Log.Println("OpenDB: success")
+		} else {
+			Log.Println("OpenDB: ping failed; error='" + pingResult.Error() + "'")
+			this.DB = nil
+		}
 	} else {
 		Log.Println("OpenDB: fail: ", dbOpenResult)
 		this.DB = nil
