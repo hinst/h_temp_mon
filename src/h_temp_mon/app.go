@@ -4,6 +4,7 @@ type TApp struct {
 	Ticker     *TTicker
 	TempReader *TTempReader
 	TempWriter *TTempWriter
+	TempDB     *TTempDB
 }
 
 func NewApp() *TApp {
@@ -12,7 +13,13 @@ func NewApp() *TApp {
 
 func (this *TApp) Run() {
 	InitializeLog()
-
+	this.TempDB = CreateTempDB()
+	this.TempDB.Prepare()
+	this.TempDB.OpenDB()
+	if this.TempDB.DB == nil {
+		return
+	}
+	this.TempDB.PrepareTables()
 	this.Ticker = CreateTicker()
 	this.Ticker.Start()
 	this.TempReader = CreateTempReader()
@@ -20,7 +27,6 @@ func (this *TApp) Run() {
 	this.TempReader.Start()
 	this.TempWriter = CreateTempWriter()
 	this.TempWriter.Input = this.TempReader.Output
-	this.TempWriter.Prepare()
 	this.TempWriter.Start()
 
 	InstallShutdownReceiver(this.Stop)
@@ -28,6 +34,7 @@ func (this *TApp) Run() {
 	this.Ticker.WaitFor()
 	this.TempReader.WaitFor()
 	this.TempWriter.WaitFor()
+	this.TempDB.CloseDB()
 }
 
 func (this *TApp) Stop() {
