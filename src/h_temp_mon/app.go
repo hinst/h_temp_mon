@@ -7,26 +7,24 @@ import (
 )
 
 type TApp struct {
-	Ticker     *TTicker
-	TempReader *TTempReader
-	TempWriter *TTempWriter
-	TempDB     *TTempDB
+	AppDirectory string
+	AppURL       string
+	Ticker       *TTicker
+	TempReader   *TTempReader
+	TempWriter   *TTempWriter
+	TempDB       *TTempDB
+	WebUI        *TWebUI
 }
 
 func NewApp() *TApp {
 	return &TApp{}
 }
 
-var AppDirectory string
-
-func InitializeAppPath() {
-	AppDirectory, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-}
-
 func (this *TApp) Run() {
-	InitializeAppPath()
+	this.AppDirectory, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+	this.AppURL = "/h_temp_mon"
 	InitializeLog()
-	Log.Println("Now running; AppDirectory='" + AppDirectory + "'")
+	Log.Println("Now running; AppDirectory='" + this.AppDirectory + "'")
 	this.TempDB = CreateTempDB()
 	this.TempDB.Prepare()
 	this.TempDB.Open()
@@ -44,6 +42,9 @@ func (this *TApp) Run() {
 	this.TempWriter.Input = this.TempReader.Output
 	this.TempWriter.DB = this.TempDB
 	this.TempWriter.Start()
+	this.WebUI = CreateWebUI()
+	this.WebUI.URL = this.AppURL
+	this.WebUI.Prepare()
 
 	InstallShutdownReceiver(this.Stop)
 
