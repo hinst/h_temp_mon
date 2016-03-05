@@ -18,7 +18,7 @@ type TTicker struct {
 func CreateTicker() *TTicker {
 	var result = &TTicker{}
 	result.BufferSize = 0
-	result.AtomicInterval = time.Second / 2
+	result.AtomicInterval = time.Second / 10
 	result.Interval = time.Second
 	result.Counter = 0
 	return result

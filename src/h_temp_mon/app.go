@@ -1,6 +1,9 @@
 package h_temp_mon
 
-import "time"
+import (
+	"os"
+	"time"
+)
 
 type TApp struct {
 	Ticker     *TTicker
@@ -13,7 +16,15 @@ func NewApp() *TApp {
 	return &TApp{}
 }
 
+var appPath string
+
+func InitializeAppPath() {
+	appPath, _ = os.Getwd()
+	Log.Println("appPath='", appPath, "'")
+}
+
 func (this *TApp) Run() {
+	InitializeAppPath()
 	InitializeLog()
 	this.TempDB = CreateTempDB()
 	this.TempDB.Prepare()
