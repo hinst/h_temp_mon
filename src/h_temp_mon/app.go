@@ -2,6 +2,7 @@ package h_temp_mon
 
 import (
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -16,16 +17,16 @@ func NewApp() *TApp {
 	return &TApp{}
 }
 
-var appPath string
+var AppDirectory string
 
 func InitializeAppPath() {
-	appPath, _ = os.Getwd()
-	Log.Println("appPath='", appPath, "'")
+	AppDirectory, _ = filepath.Abs(filepath.Dir(os.Args[0]))
 }
 
 func (this *TApp) Run() {
 	InitializeAppPath()
 	InitializeLog()
+	Log.Println("Now running; AppDirectory='" + AppDirectory + "'")
 	this.TempDB = CreateTempDB()
 	this.TempDB.Prepare()
 	this.TempDB.Open()
