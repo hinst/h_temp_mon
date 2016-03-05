@@ -24,7 +24,7 @@ func (this *TTempReader) Read() float32 {
 		var text = string(data)
 		temperature = ExtractTemperatureFromText(text)
 	} else {
-		panic(result)
+		Log.Println("Error while executing command:", result)
 	}
 	return temperature
 }

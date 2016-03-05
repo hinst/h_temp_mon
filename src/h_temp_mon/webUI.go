@@ -19,13 +19,25 @@ func CreateWebUI() *TWebUI {
 func (this *TWebUI) Prepare() {
 	this.installFileHandler("js")
 	this.installFileHandler("css")
+	this.installTestHandler()
 }
 
 func (this *TWebUI) installFileHandler(subDirectory string) {
-	var url = this.URL + "/" + subDirectory
+	var url = this.URL + "/" + subDirectory + "/"
 	var directory = this.Directory + "/" + subDirectory
-	Log.Println("installFileHandler:", url, "->", directory)
-	http.Handle(url, http.FileServer(http.Dir(directory)))
+	Log.Println("installFileHandler: '" + url + "' -> '" + directory + "'")
+	var fileServer = http.FileServer(http.Dir(directory))
+	http.Handle(url, http.StripPrefix(url, fileServer))
+}
+
+func (this *TWebUI) installTestHandler() {
+	var url = this.URL + "/test"
+	Log.Println("test handler installed at '" + url + "'")
+	http.HandleFunc(url, this.processTestRequest)
+}
+
+func (this *TWebUI) processTestRequest(response http.ResponseWriter, request *http.Request) {
+	response.Write([]byte("test"))
 }
 
 func (this *TWebUI) ProcessRequest(response http.ResponseWriter, request *http.Request) {
