@@ -1,19 +1,20 @@
 package h_temp_mon
 
 import (
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
 )
 
 type TApp struct {
-	AppDirectory string
-	AppURL       string
-	Ticker       *TTicker
-	TempReader   *TTempReader
-	TempWriter   *TTempWriter
-	TempDB       *TTempDB
-	WebUI        *TWebUI
+	Directory  string
+	URL        string
+	Ticker     *TTicker
+	TempReader *TTempReader
+	TempWriter *TTempWriter
+	TempDB     *TTempDB
+	WebUI      *TWebUI
 }
 
 func NewApp() *TApp {
@@ -21,10 +22,10 @@ func NewApp() *TApp {
 }
 
 func (this *TApp) Run() {
-	this.AppDirectory, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-	this.AppURL = "/h_temp_mon"
+	this.Directory, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+	this.URL = "/h_temp_mon"
 	InitializeLog()
-	Log.Println("Now running; AppDirectory='" + this.AppDirectory + "'")
+	Log.Println("Now running; AppDirectory='" + this.Directory + "'")
 	this.TempDB = CreateTempDB()
 	this.TempDB.Prepare()
 	this.TempDB.Open()
@@ -43,8 +44,10 @@ func (this *TApp) Run() {
 	this.TempWriter.DB = this.TempDB
 	this.TempWriter.Start()
 	this.WebUI = CreateWebUI()
-	this.WebUI.URL = this.AppURL
+	this.WebUI.Directory = this.Directory
+	this.WebUI.URL = this.URL
 	this.WebUI.Prepare()
+	go http.ListenAndServe(":9001", nil)
 
 	InstallShutdownReceiver(this.Stop)
 

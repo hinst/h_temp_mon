@@ -17,8 +17,15 @@ func CreateWebUI() *TWebUI {
 }
 
 func (this *TWebUI) Prepare() {
-	http.Handle(this.URL+"/js", http.FileServer(http.Dir(this.Directory+"/js")))
-	http.Handle(this.URL+"/css", http.FileServer(http.Dir(this.Directory+"/css")))
+	this.installFileHandler("js")
+	this.installFileHandler("css")
+}
+
+func (this *TWebUI) installFileHandler(subDirectory string) {
+	var url = this.URL + "/" + subDirectory
+	var directory = this.Directory + "/" + subDirectory
+	Log.Println("installFileHandler:", url, "->", directory)
+	http.Handle(url, http.FileServer(http.Dir(directory)))
 }
 
 func (this *TWebUI) ProcessRequest(response http.ResponseWriter, request *http.Request) {
