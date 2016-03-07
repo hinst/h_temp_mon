@@ -4,14 +4,16 @@ import (
 	"bufio"
 	"bytes"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 	"sync"
 )
 
 type TWebUI struct {
-	Waiter    sync.WaitGroup
-	Directory string
-	URL       string
+	Waiter           sync.WaitGroup
+	Directory        string
+	URL              string
+	PageSubdirectory string
 }
 
 type TPageData struct {
@@ -21,14 +23,16 @@ type TPageData struct {
 }
 
 func CreateWebUI() *TWebUI {
-	var result = &TWebUI{}
-	return result
+	var this = &TWebUI{}
+	this.PageSubdirectory = "page"
+	return this
 }
 
 func (this *TWebUI) Prepare() {
 	this.installFileHandler("js")
 	this.installFileHandler("css")
 	this.installTestHandler()
+	http.HandleFunc(this.URL+"/status", this.ProcessStatusRequest)
 }
 
 func (this *TWebUI) installFileHandler(subDirectory string) {
@@ -49,16 +53,29 @@ func (this *TWebUI) processTestRequest(response http.ResponseWriter, request *ht
 	response.Write([]byte("test"))
 }
 
-func (this *TWebUI) ProcessRequest(response http.ResponseWriter, request *http.Request) {
+func (this *TWebUI) ProcessStatusRequest(response http.ResponseWriter, request *http.Request) {
+	var pageData TPageData
+	pageData.Title = "Status"
+	pageData.AppURL = this.URL
+	pageData.Body = this.GetPageContent("status.html")
 }
 
 func (this *TWebUI) ApplyTemplate(pageData *TPageData) string {
-	var preparedTemplate, templateError = template.ParseFiles(this.Directory + "/page/template.html")
+	var preparedTemplate, templateError = template.ParseFiles(this.Directory + "/" + this.PageSubdirectory + "/template.html")
 	var result = ""
 	if templateError == nil {
 		var data bytes.Buffer
 		preparedTemplate.Execute(bufio.NewWriter(&data), pageData)
 		result = data.String()
+	}
+	return result
+}
+
+func (this *TWebUI) GetPageContent(fileName string) string {
+	var data, readResult = ioutil.ReadFile(this.Directory + "/" + this.PageSubdirectory + "/" + fileName)
+	var result = ""
+	if readResult == nil {
+		result = string(data)
 	}
 	return result
 }
