@@ -53,7 +53,6 @@ func (this *TWebUI) processTestRequest(response http.ResponseWriter, request *ht
 }
 
 func (this *TWebUI) ProcessStatusRequest(response http.ResponseWriter, request *http.Request) {
-	Log.Println("ProcessStatusRequest <-")
 	var pageData TPageData
 	pageData.Title = "Status"
 	pageData.AppURL = this.URL
