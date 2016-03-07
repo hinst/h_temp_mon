@@ -1,6 +1,9 @@
 package h_temp_mon
 
 import (
+	"bufio"
+	"bytes"
+	"html/template"
 	"net/http"
 	"sync"
 )
@@ -11,7 +14,7 @@ type TWebUI struct {
 	URL       string
 }
 
-type TPageStruct struct {
+type TPageData struct {
 	Title  string
 	AppURL string
 	Body   string
@@ -47,4 +50,12 @@ func (this *TWebUI) processTestRequest(response http.ResponseWriter, request *ht
 }
 
 func (this *TWebUI) ProcessRequest(response http.ResponseWriter, request *http.Request) {
+}
+
+func (this *TWebUI) ApplyTemplate(pageData *TPageData) string {
+	var preparedTemplate, templateError = template.ParseFiles(this.Directory + "/page/template.html")
+	if templateError == nil {
+		var data bytes.Buffer
+		preparedTemplate.Execute(bufio.NewWriter(&data), pageData)
+	}
 }
