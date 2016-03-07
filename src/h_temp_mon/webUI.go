@@ -1,11 +1,11 @@
 package h_temp_mon
 
 import (
-	"bufio"
 	"bytes"
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"sync"
 )
 
@@ -54,29 +54,42 @@ func (this *TWebUI) processTestRequest(response http.ResponseWriter, request *ht
 }
 
 func (this *TWebUI) ProcessStatusRequest(response http.ResponseWriter, request *http.Request) {
+	Log.Println("ProcessStatusRequest <-")
 	var pageData TPageData
 	pageData.Title = "Status"
 	pageData.AppURL = this.URL
 	pageData.Body = this.GetPageContent("status.html")
+	Log.Println("len(pageData.Body)=" + strconv.Itoa(len(pageData.Body)))
 	response.Write([]byte(this.ApplyTemplate(pageData)))
 }
 
 func (this *TWebUI) ApplyTemplate(pageData TPageData) string {
-	var preparedTemplate, templateError = template.ParseFiles(this.Directory + "/" + this.PageSubdirectory + "/template.html")
+	var templateFilePath = this.Directory + "/" + this.PageSubdirectory + "/template.html"
+	var preparedTemplate, templateParseError = template.ParseFiles(templateFilePath)
 	var result = ""
-	if templateError == nil {
+	if templateParseError == nil {
 		var data bytes.Buffer
-		preparedTemplate.Execute(bufio.NewWriter(&data), pageData)
-		result = data.String()
+		var templateExecuteError = preparedTemplate.Execute(&data, pageData)
+		if templateExecuteError == nil {
+			result = data.String()
+		} else {
+			Log.Panic("Could not execute template, error='" + templateExecuteError.Error() + "'")
+		}
+	} else {
+		Log.Panic("Could not read template from '" + templateFilePath + "'")
 	}
+	Log.Println("len(result)=" + strconv.Itoa(len(result)))
 	return result
 }
 
 func (this *TWebUI) GetPageContent(fileName string) string {
-	var data, readResult = ioutil.ReadFile(this.Directory + "/" + this.PageSubdirectory + "/" + fileName)
+	var filePath = this.Directory + "/" + this.PageSubdirectory + "/" + fileName
+	var data, readResult = ioutil.ReadFile(filePath)
 	var result = ""
 	if readResult == nil {
 		result = string(data)
+	} else {
+		Log.Println("Could not get page content: '" + filePath + "'")
 	}
 	return result
 }
