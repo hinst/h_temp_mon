@@ -54,8 +54,11 @@ func (this *TWebUI) ProcessRequest(response http.ResponseWriter, request *http.R
 
 func (this *TWebUI) ApplyTemplate(pageData *TPageData) string {
 	var preparedTemplate, templateError = template.ParseFiles(this.Directory + "/page/template.html")
+	var result = ""
 	if templateError == nil {
 		var data bytes.Buffer
 		preparedTemplate.Execute(bufio.NewWriter(&data), pageData)
+		result = data.String()
 	}
+	return result
 }
