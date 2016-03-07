@@ -9,10 +9,11 @@ import (
 )
 
 type TWebUI struct {
-	Waiter           sync.WaitGroup
-	Directory        string
-	URL              string
-	PageSubdirectory string
+	Waiter             sync.WaitGroup
+	Directory          string
+	URL                string
+	PageSubdirectory   string
+	FileHandlerEnabled bool
 }
 
 type TPageData struct {
@@ -24,12 +25,15 @@ type TPageData struct {
 func CreateWebUI() *TWebUI {
 	var this = &TWebUI{}
 	this.PageSubdirectory = "page"
+	this.FileHandlerEnabled = false
 	return this
 }
 
 func (this *TWebUI) Prepare() {
-	this.installFileHandler("js")
-	this.installFileHandler("css")
+	if this.FileHandlerEnabled {
+		this.installFileHandler("js")
+		this.installFileHandler("css")
+	}
 	this.installTestHandler()
 	http.HandleFunc(this.URL+"/status", this.ProcessStatusRequest)
 }
