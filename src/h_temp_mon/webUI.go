@@ -11,6 +11,12 @@ type TWebUI struct {
 	URL       string
 }
 
+type TPageStruct struct {
+	Title  string
+	AppURL string
+	Body   string
+}
+
 func CreateWebUI() *TWebUI {
 	var result = &TWebUI{}
 	return result
