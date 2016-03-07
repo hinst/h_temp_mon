@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"sync"
 )
 
@@ -59,7 +58,6 @@ func (this *TWebUI) ProcessStatusRequest(response http.ResponseWriter, request *
 	pageData.Title = "Status"
 	pageData.AppURL = this.URL
 	pageData.Body = this.GetPageContent("status.html")
-	Log.Println("len(pageData.Body)=" + strconv.Itoa(len(pageData.Body)))
 	response.Write([]byte(this.ApplyTemplate(pageData)))
 }
 
@@ -78,7 +76,6 @@ func (this *TWebUI) ApplyTemplate(pageData TPageData) string {
 	} else {
 		Log.Panic("Could not read template from '" + templateFilePath + "'")
 	}
-	Log.Println("len(result)=" + strconv.Itoa(len(result)))
 	return result
 }
 
@@ -89,7 +86,7 @@ func (this *TWebUI) GetPageContent(fileName string) string {
 	if readResult == nil {
 		result = string(data)
 	} else {
-		Log.Println("Could not get page content: '" + filePath + "'")
+		Log.Panic("Could not get page content: '" + filePath + "'")
 	}
 	return result
 }
