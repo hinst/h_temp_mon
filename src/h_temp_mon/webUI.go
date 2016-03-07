@@ -58,9 +58,10 @@ func (this *TWebUI) ProcessStatusRequest(response http.ResponseWriter, request *
 	pageData.Title = "Status"
 	pageData.AppURL = this.URL
 	pageData.Body = this.GetPageContent("status.html")
+	response.Write([]byte(this.ApplyTemplate(pageData)))
 }
 
-func (this *TWebUI) ApplyTemplate(pageData *TPageData) string {
+func (this *TWebUI) ApplyTemplate(pageData TPageData) string {
 	var preparedTemplate, templateError = template.ParseFiles(this.Directory + "/" + this.PageSubdirectory + "/template.html")
 	var result = ""
 	if templateError == nil {
