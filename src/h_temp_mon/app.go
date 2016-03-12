@@ -46,6 +46,7 @@ func (this *TApp) Run() {
 	this.WebUI = CreateWebUI()
 	this.WebUI.Directory = this.Directory
 	this.WebUI.URL = this.URL
+	this.WebUI.DB = this.TempDB
 	this.WebUI.Prepare()
 	go http.ListenAndServe(":9001", nil)
 

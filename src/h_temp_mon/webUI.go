@@ -2,6 +2,7 @@ package h_temp_mon
 
 import (
 	"bytes"
+	"encoding/xml"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +15,7 @@ type TWebUI struct {
 	URL                string
 	PageSubdirectory   string
 	FileHandlerEnabled bool
+	DB                 *TTempDB
 }
 
 type TPageData struct {
@@ -62,6 +64,12 @@ func (this *TWebUI) ProcessStatusRequest(response http.ResponseWriter, request *
 	pageData.AppURL = this.URL
 	pageData.Body = this.GetPageContent("status.html")
 	response.Write([]byte(this.ApplyTemplate(pageData)))
+}
+
+func (this *TWebUI) ProcessLatestTemperatureRequest(response http.ResponseWriter, request *http.Request) {
+	var temperatureRow = this.DB.ReadLatestTemperature()
+	var encoder = xml.NewEncoder(response)
+	encoder.Encode(temperatureRow)
 }
 
 func (this *TWebUI) ApplyTemplate(pageData TPageData) string {

@@ -70,7 +70,7 @@ func (this *TTempDB) Close() {
 
 func (this *TTempDB) PrepareTables() {
 	var transaction, _ = this.DB.Begin()
-	this.PrepareTable(transaction, "Temperatures", "Moment timestamp, temperature float")
+	this.PrepareTable(transaction, "Temperatures", "moment timestamp, temperature float")
 	transaction.Commit()
 }
 
@@ -95,6 +95,17 @@ func (this *TTempDB) WriteTemperature(temperature float32) {
 	} else {
 		this.ReportError("WriteTemperature: error='" + err.Error() + "' statement='" + statementString + "'")
 	}
+}
+
+func (this *TTempDB) ReadLatestTemperature() TTempDBRow {
+	var result TTempDBRow
+	var rows, queryResult = this.DB.Query("select * from Temperatures order by Moment rows 1")
+	if queryResult == nil {
+		rows.Scan(&result.Moment, &result.Temperature)
+	} else {
+		this.ReportError(queryResult.Error())
+	}
+	return result
 }
 
 func (this *TTempDB) ReportError(text string) {
