@@ -97,13 +97,29 @@ func (this *TTempDB) WriteTemperature(temperature float32) {
 	}
 }
 
+func (this *TTempDB) ReadLatestMoment(transaction *sql.Tx) time.Time {
+	var result time.Time
+	var row = transaction.QueryRow("select max(moment) from Temperatures")
+	var queryResult = row.Scan(&result)
+	if queryResult != nil {
+		this.ReportError(queryResult.Error())
+	}
+	return result
+}
+
 func (this *TTempDB) ReadLatestTemperature() TTempDBRow {
 	var result TTempDBRow
-	var rows, queryResult = this.DB.Query("select * from Temperatures order by Moment rows 1")
-	if queryResult == nil {
-		rows.Scan(&result.Moment, &result.Temperature)
+	var transaction, transactionError = this.DB.Begin()
+	defer transaction.Commit()
+	if transactionError == nil {
+		var moment = this.ReadLatestMoment(transaction)
+		var row = transaction.QueryRow("select * from Temperatures where moment = " + TimeToFirebirdString(moment))
+		var queryError = row.Scan(&result.Moment, &result.Temperature)
+		if queryError != nil {
+			this.ReportError(transactionError.Error())
+		}
 	} else {
-		this.ReportError(queryResult.Error())
+		this.ReportError(transactionError.Error())
 	}
 	return result
 }

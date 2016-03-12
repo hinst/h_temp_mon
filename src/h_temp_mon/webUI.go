@@ -38,6 +38,7 @@ func (this *TWebUI) Prepare() {
 	}
 	this.installTestHandler()
 	http.HandleFunc(this.URL+"/status", this.ProcessStatusRequest)
+	http.HandleFunc(this.URL+"/current_temperature", this.ProcessLatestTemperatureRequest)
 }
 
 func (this *TWebUI) installFileHandler(subDirectory string) {
