@@ -3,6 +3,8 @@
 	<head>
 		<title>{{.Title}} - h_temp_mon</title>
 		<link rel="stylesheet" type="text/css" href="{{.AppURL}}/css/bootstrap.css">
+		<script type="text/javascript" src="{{.AppURL}}/js/jquery-2.2.1.js"></script>
+		<script type="text/javascript" src="{{.AppURL}}/js/bootstrap.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -11,16 +13,14 @@
 					<div class="navbar-header">
 						<a class="navbar-brand" href="{{.AppURL}}">h_temp_mon</a>
 					</div>
-					<div class="collapse navbar-collapse">
+					<div id="navbar" class="navbar-collapse collapse">
 						<ul class="nav navbar-nav">
-							<li class="active">{{.Title}}</li>
+							<li class="active"><a>{{.Title}}</a></li>
 						</ul>
 					</div>
 				</div>
 			</nav>
 		{{.Body}}
 		</div>
-		<script type="text/javascript" src="{{.AppURL}}/js/jquery-2.2.1.js"></script>
-		<script type="text/javascript" src="{{.AppURL}}/js/bootstrap.js"></script>
 	</body>
 </html>
