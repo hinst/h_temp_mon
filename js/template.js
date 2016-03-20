@@ -1,13 +1,22 @@
+var lastTemperature = "";
+var degreeString = "°";
 var readTemperature = function() {
 	jQuery.ajax({
 		type: "GET",
 		url: AppURL + "/current_temperature",
 		dataType: "xml",
 		success: function(xmlDocument) {
-			console.log(xmlDocument != null);
 			var temperature = $(xmlDocument).find("Temperature").text();
-			console.log("temperature=" + temperature);
+			lastTemperature = temperature;
+			$('#temperature').html("" + temperature + degreeString);
+		},
+		error: function (a, b, c) {
+			$('#temperature').html("<s>" + lastTemperature + degreeString + "</s>");
 		}
 	});
 }
-readTemperature();
+var readTemperatureContinuously = function() {
+	readTemperature();
+	setTimeout(readTemperatureContinuously, 2000);
+}
+readTemperatureContinuously();
