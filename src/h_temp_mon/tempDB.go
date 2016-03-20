@@ -109,17 +109,10 @@ func (this *TTempDB) ReadLatestMoment(transaction *sql.Tx) time.Time {
 
 func (this *TTempDB) ReadLatestTemperature() TTempDBRow {
 	var result TTempDBRow
-	var transaction, transactionError = this.DB.Begin()
-	defer transaction.Commit()
-	if transactionError == nil {
-		var moment = this.ReadLatestMoment(transaction)
-		var row = transaction.QueryRow("select * from Temperatures where moment = '" + TimeToFirebirdString(moment) + "'")
-		var queryError = row.Scan(&result.Moment, &result.Temperature)
-		if queryError != nil {
-			this.ReportError(queryError.Error())
-		}
-	} else {
-		this.ReportError(transactionError.Error())
+	var row = this.DB.QueryRow("select * from Temperatures order by moment desc rows 1")
+	var rowError = row.Scan(&result.Moment, &result.Temperature)
+	if rowError != nil {
+		this.ReportError(rowError.Error())
 	}
 	return result
 }
